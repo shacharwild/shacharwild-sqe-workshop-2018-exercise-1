@@ -98,13 +98,13 @@ function headerLines(parsedCode){
     let name=(parsedCode.body)[0].id.name;
 
     //put the header of the function in the table:
-    result.push({'Line':parsedCode.loc.start.line, 'Type':(parsedCode.body)[0].type, 'Name': name, 'Condition': '', 'Value':''});
+    insertIntoResult(parsedCode,(parsedCode.body)[0].type, name, '', '');
     //put the function's params in the table:
     var params_amount=(parsedCode.body)[0].params.length;
 
     for (let i=0; i<params_amount ; i++){
         let name=(parsedCode.body)[0].params[i].name;
-        result.push({'Line':parsedCode.loc.start.line, 'Type' :'variable declaration', 'Name': name, 'Condition': '', 'Value':''});
+        insertIntoResult(parsedCode,'variable declaration', name, '', '');
     }
 }
 
@@ -203,10 +203,11 @@ function decStatement(statements){ //can be several decleration statement in the
         var varValue;
         if (statement.init!=null){
             varValue = valueReturn(statement.init);
-            result.push({'Line':statement.loc.start.line, 'Type' :'variable declaration', 'Name': statement.id.name, 'Condition': '', 'Value': varValue});
+            insertIntoResult(statement,'variable declaration', statement.id.name, '', varValue);
+
         }
         else{
-            result.push({'Line':statement.loc.start.line, 'Type' :'variable declaration', 'Name': statement.id.name, 'Condition': '', 'Value': 'null(or nothing)'});
+            insertIntoResult(statement,'variable declaration', statement.id.name, '',  'null(or nothing)');
         }
     }
 }
@@ -215,13 +216,13 @@ function assStatement(statement){
     if (statement.expression.type=='AssignmentExpression') {//asisgnment statement
         let name = valueReturn(statement.expression.left);
         let value = valueReturn(statement.expression.right);
-        result.push({'Line': statement.loc.start.line, 'Type': 'assignment expression', 'Name': name, 'Condition': '', 'Value': value});
+        insertIntoResult(statement,'assignment expression', name, '', value);
     }
     if (statement.expression.type=='UpdateExpression'){
         let name = statement.expression.argument.name;
         let operator=IncreaseOrDecrease(statement.expression.operator);
         let value =  name+''+operator+'1';
-        result.push({'Line': statement.loc.start.line, 'Type': 'update expression', 'Name': name, 'Condition': '', 'Value': value});
+        insertIntoResult(statement,'update expression', name, '', value);
     }
 }
 
@@ -236,7 +237,7 @@ function IncreaseOrDecrease(operator){
 function whileStatement(statement){
     var condition;
     condition=valueReturn(statement.test);
-    result.push({'Line':statement.loc.start.line, 'Type' :'while statement', 'Name': '', 'Condition': condition, 'Value': ''});
+    insertIntoResult(statement,'while statement', '', condition,'');
     //IF THERE ARE MORE STATEMENTS INSIDE THE WHILE:
     bodyLines(statement.body.body);
 }
@@ -245,7 +246,7 @@ function whileStatement(statement){
 function ifstatement(statement) {
     //header(condition)
     let condition = valueReturn(statement.test);
-    result.push({'Line': statement.loc.start.line, 'Type': 'if statement', 'Name': '', 'Condition': condition, 'Value': ''});
+    insertIntoResult(statement,'if statement', '', condition,'');
     //IF THERE ARE MORE STATEMENTS INSIDE THE IF:
     if (statement.consequent.body != null) { //if there's more than one line in the for
         bodyLines(statement.consequent.body);
@@ -286,13 +287,13 @@ function elseIfBody(statement){
 function returnStatement(statement){
     var res;
     res=valueReturn(statement.argument);
-    result.push({'Line':statement.loc.start.line, 'Type' :'return statement', 'Name': '', 'Condition':'' , 'Value': res});
+    insertIntoResult(statement,'return statement', '', '',res);
 }
 
 //else if header (condition)
 function elseIfHeader(statement) {
     var condition =valueReturn(statement.test);
-    result.push({'Line':statement.loc.start.line, 'Type' :'else if statement', 'Name': '', 'Condition': condition, 'Value': ''});
+    insertIntoResult(statement,'else if statement', '', condition,'');
 }
 
 function forStatement(statement){
@@ -306,8 +307,7 @@ function forStatement(statement){
     }
     let cond = valueReturn(statement.test);
     action = forStatementAction(statement);
-    result.push({'Line':statement.loc.start.line, 'Type' :'for statement', 'Name': '', 'Condition':init+';'+cond+';'+action , 'Value':''});
-
+    insertIntoResult(statement,'for statement', '', init+';'+cond+';'+action,'');
     bodyLines(statement.body.body);
 }
 
@@ -322,4 +322,7 @@ function forStatementAction(statement){
         let value = valueReturn(statement.update.right);
         return (name+'='+value);
     }
+}
+function insertIntoResult(parsedCode,Type,Name, Condition, Value ){
+    result.push({'Line':parsedCode.loc.start.line, 'Type' :Type, 'Name': Name, 'Condition': Condition, 'Value':Value});
 }
