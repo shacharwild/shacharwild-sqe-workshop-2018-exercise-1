@@ -153,7 +153,7 @@ describe('10', () => {
             '{"Line":11,"Type":"assignment expression","Name":"x","Condition":"","Value":"layla"}]'
         );});});
 
-describe('10', () => {
+describe('11', () => {
     it('is parsing an if (without "else if" and "else") statement correctly', () => {
         assert.equal(
             JSON.stringify(parseCode('if (x==5){}')),
