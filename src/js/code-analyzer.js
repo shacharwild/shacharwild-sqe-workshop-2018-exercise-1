@@ -8,7 +8,6 @@ const parseCode = (codeToParse) => {
     else {
         result = [];
         let parsedCode = esprima.parseScript(codeToParse, {loc: true});
-        //$('#parsedCode').val(JSON.stringify(parsedCode, null, 2));
         result = startBuildingTable(parsedCode);
         return result;
     }
@@ -82,17 +81,24 @@ function longValue(statement) {
 
 //find value of ComputedMemberExpression
 function memberExpressionValue(statement){
-    let value='';
-    if (statement.property.name != null)
-        value = statement.object.name + '[' + statement.property.name + ']';
-    else if (statement.property.value != null)
-        value = statement.object.name + '[' + statement.property.value + ']';
-    else
-        value = statement.object.name + '[' +(valueReturn(statement.property))+ ']';
-    return value;
-
+    if (statement.type!='LogicalExpression') { //member expression value;
+        let value = '';
+        if (statement.property.name != null)
+            value = statement.object.name + '[' + statement.property.name + ']';
+        else if (statement.property.value != null)
+            value = statement.object.name + '[' + statement.property.value + ']';
+        else
+            value = statement.object.name + '[' + (valueReturn(statement.property)) + ']';
+        return value;
+    }
+    else{
+        return LogicalExpression(statement);
+    }
 }
 
+function LogicalExpression(statement){
+    return valueReturn(statement.left)+statement.operator+valueReturn(statement.right);
+}
 //function decleration
 function headerLines(parsedCode){
     let name=(parsedCode.body)[0].id.name;
@@ -188,13 +194,9 @@ function bodyLines(statement)
 
 //checks the type of the given statement and convert it into lines
 function checkStatement(body){
-    // if (body.type=='EmptyStatement'){
-    //     return;
-    // }
-    //  else {
     parseData(body);
-    //  }
 }
+
 //decleration statements
 function decStatement(statements){ //can be several decleration statement in the same row
     let num_statements = statements.declarations.length;

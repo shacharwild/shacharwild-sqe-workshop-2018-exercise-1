@@ -125,10 +125,10 @@ describe('8', () => {
 describe('9', () => {
     it('is parsing second complicated assignment expression correctly', () => {
         assert.equal(
-            JSON.stringify(parseCode('for (let i=0; i<5; i++){\n' +
+            JSON.stringify(parseCode('for (let i=0; i<5 && i>6; i++){\n' +
                 'x=x[y]+(x[5]+x[y+5]);\n' +
                 '}')),
-            '[{"Line":1,"Type":"for statement","Name":"","Condition":"i=0;i < 5;i++","Value":""},' +
+            '[{"Line":1,"Type":"for statement","Name":"","Condition":"i=0;i < 5&&i > 6;i++","Value":""},' +
             '{"Line":2,"Type":"assignment expression","Name":"x","Condition":"","Value":"x[y] + (x[5] + x[y + 5])"}]'
         );
     });
