@@ -9,7 +9,7 @@ $(document).ready(function () {
         // let parsedCode = parseCode(codeToParse);
         // $('#parsedCode').val(JSON.stringify(parsedCode, null, 2));
         //result=[];
-        let  result =  parseCode(codeToParse);
+        let  result =  parseCode(codeToParse); //return array with table data
         makeTable(result);
 
     });
